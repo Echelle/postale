@@ -1,0 +1,21 @@
+name: postale_env
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.8
+  - numpy
+  - scipy
+  - matplotlib
+  - astropy
+  - astroquery
+  - specutils
+  - tqdm
+  - pandas
+  - jupyter
+  - ipython
+  - seaborn
+  - openpyxl
+  - scikit-learn
+  - black
+  - pip
