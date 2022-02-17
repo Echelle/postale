@@ -79,3 +79,4 @@ class SiliconGrating(object):
             np.sin(self.incidence_angle_radians)
             - self.m_vector * self.wavelength / self.sigma
         )
+        return theta_m_radians
