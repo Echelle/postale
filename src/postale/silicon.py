@@ -8,7 +8,6 @@ A diffraction grating class
 SiliconGrating
 ##############
 """
-
 import numpy as np
 
 
@@ -21,7 +20,8 @@ class SiliconGrating(object):
         blaze_angle (scalar): The blaze angle in degrees
         apex_angle (scalar): The Si apex angle in degrees (defaults to 70.53)
         wavelength (scalar): The wavelength incident on the grating (defaults to 0.6328 um)
-        incidence_angle (scalar): The incidence angle in degrees as measured from the grating normal (default: blaze angle)
+        incidence_angle (scalar): The incidence angle in degrees as measured from the 
+            grating normal (default: blaze angle)
         immersion (bool): Whether the groove is illuminated in immersion or not
     """
 
@@ -32,8 +32,8 @@ class SiliconGrating(object):
         blaze_angle,
         apex_angle=70.53,
         incidence_angle=None,
-        wavelength=None,
-        immersion=0.6328,
+        wavelength=0.6328,
+        immersion=False,
     ):
 
         self.sigma = sigma
@@ -44,6 +44,8 @@ class SiliconGrating(object):
         self.apex_angle_degrees = apex_angle
         self.apex_angle_radians = np.radians(apex_angle)
 
+        if incidence_angle is None:
+            incidence_angle = blaze_angle
         self.incidence_angle_degrees = incidence_angle
         self.incidence_angle_radians = np.radians(incidence_angle)
 
@@ -61,7 +63,8 @@ class SiliconGrating(object):
         """
         max_m = np.floor(2 * self.sigma / self.wavelength)
         return max_m
-
+    
+    @property
     def m_vector(self):
         """Return the vector of diffraction orders :math:`[-m_{max}, \cdots, 0, +m_{max}]`
 
@@ -72,7 +75,8 @@ class SiliconGrating(object):
         m_vector = np.arange(-self.max_m, self.max_m + 1, 1)
         return m_vector
 
-    def diffracted_angles(self):
+    @property
+    def diffracted_angles_radians(self):
         """Apply the grating equation to compute the angle of each diffracted order"""
 
         theta_m_radians = np.arcsin(
@@ -80,3 +84,14 @@ class SiliconGrating(object):
             - self.m_vector * self.wavelength / self.sigma
         )
         return theta_m_radians
+
+    @property
+    def diffracted_angles_degrees(self):
+        """The diffracted angles in degrees"""
+        return np.degrees(self.diffracted_angles_radians)
+
+    @property
+    def available_orders(self):
+        """Which orders are available for the current grating configuration?"""
+        finite_mask = np.isfinite(self.diffracted_angles_radians)
+        return self.m_vector[finite_mask]
